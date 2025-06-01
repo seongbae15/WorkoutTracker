@@ -27,6 +27,7 @@ public class MainManager : MonoBehaviour
             if (path != null)
             {
                 Debug.Log("Video selected: " + path);
+                videoPath = path;
                 SceneManager.LoadScene("SelectedVideoScene");
 
             }
