@@ -3,19 +3,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MenuUIHandler : MonoBehaviour
 {
-    public void UploadVideo()
+    public void Move2SelectedVideoScene()
     {
-        SceneManager.LoadScene("VideoUploadScene");
+        MainManager.Instance.PickVideoFromGallery();
+        SceneManager.LoadScene("SelectedVideoScene");
     }
 
     public void Move2StartScene()
     {
         SceneManager.LoadScene("StartScene");
-    }
-
-    public void Move2VedioEditScene()
-    {
-        SceneManager.LoadScene("VideoEditScene");
     }
 
     public void Move2Inferecne()
