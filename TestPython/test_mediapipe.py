@@ -37,11 +37,13 @@ if __name__ == "__main__":
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        print(frame_width)
-        print(frame_height)
         # VideoWriter
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
+
+        # 영역 누적용 마스크
+        path_mask = np.zeros((frame_height, frame_width), dtype=np.uint8)
+        alpha_mask = np.zeros((frame_height, frame_width, 3), dtype=np.uint8)
 
         timestamp_ms = 0  # 각 프레임의 타임스탬프 (밀리초)
         print("비디오 처리를 시작합니다...")
@@ -64,32 +66,47 @@ if __name__ == "__main__":
 
             # Landmark가 감지 될 경우, 프레임에 그리기
             if pose_landmarker_result and pose_landmarker_result.pose_landmarks:
-                annotated_frame = frame.copy()
-                landmarks = pose_landmarker_result.pose_landmarks[0]
-                landmark_list_proto = landmark_pb2.NormalizedLandmarkList(
-                    landmark=[
-                        landmark_pb2.NormalizedLandmark(
-                            x=lmk.x, y=lmk.y, z=lmk.z, visibility=lmk.visibility, presence=lmk.presence
-                        )
-                        for lmk in landmarks
-                    ]
-                )
+                points = [(int(lmk.x * frame_width), int(lmk.y * frame_height)) for lmk in pose_landmarker_result]
 
-                mp_drawing.draw_landmarks(
-                    annotated_frame,
-                    landmark_list_proto,
-                    mp_pose.POSE_CONNECTIONS,
-                    landmark_drawing_spec=mp_drawing.DrawingSpec(
-                        color=(0, 255, 0),
-                        thickness=2,
-                        circle_radius=2,
-                    ),
-                    connection_drawing_spec=mp_drawing.DrawingSpec(
-                        color=(0, 0, 255),
-                        thickness=2,
-                    ),
-                )
-                out.write(annotated_frame)
+                for connection in mp_pose.POSE_CONNECTIONS:
+                    start_idx, end_idx = connection
+                    if start_idx < len(points) and end_idx < len(points):
+                        pt1 = points[start_idx]
+                        pt2 = points[end_idx]
+                        cv2.line(path_mask, pt1, pt2, 255, 2)  # 경로 기록용 흑백 선
+
+                # 투명한 컬러 오버레이 생성
+                alpha_mask[:, :] = (0, 255, 0)  # 초록색
+                mask_colored = cv2.bitwise_and(alpha_mask, alpha_mask, mask=path_mask)
+                overlayed_frame = cv2.addWeighted(frame, 1.0, mask_colored, 0.3, 0)  # 0.3 투명도
+
+                out.write(overlayed_frame)
+                # annotated_frame = frame.copy()
+                # landmarks = pose_landmarker_result.pose_landmarks[0]
+                # landmark_list_proto = landmark_pb2.NormalizedLandmarkList(
+                #     landmark=[
+                #         landmark_pb2.NormalizedLandmark(
+                #             x=lmk.x, y=lmk.y, z=lmk.z, visibility=lmk.visibility, presence=lmk.presence
+                #         )
+                #         for lmk in landmarks
+                #     ]
+                # )
+
+                # mp_drawing.draw_landmarks(
+                #     annotated_frame,
+                #     landmark_list_proto,
+                #     mp_pose.POSE_CONNECTIONS,
+                #     landmark_drawing_spec=mp_drawing.DrawingSpec(
+                #         color=(0, 255, 0),
+                #         thickness=2,
+                #         circle_radius=2,
+                #     ),
+                #     connection_drawing_spec=mp_drawing.DrawingSpec(
+                #         color=(0, 0, 255),
+                #         thickness=2,
+                #     ),
+                # )
+                # out.write(annotated_frame)
             else:
                 out.write(frame)
 
