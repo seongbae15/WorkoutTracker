@@ -418,9 +418,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 59018139}
-        m_TargetAssemblyTypeName: MainManager, Assembly-CSharp
-        m_MethodName: PickVideoFromGallery
+      - m_Target: {fileID: 1608613140}
+        m_TargetAssemblyTypeName: MenuUIHandler, Assembly-CSharp
+        m_MethodName: Move2SelectedVideoScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

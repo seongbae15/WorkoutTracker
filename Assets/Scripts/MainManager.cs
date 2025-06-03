@@ -28,8 +28,6 @@ public class MainManager : MonoBehaviour
             {
                 Debug.Log("Video selected: " + path);
                 videoPath = path;
-                SceneManager.LoadScene("SelectedVideoScene");
-
             }
         }, "Select a video");
     }

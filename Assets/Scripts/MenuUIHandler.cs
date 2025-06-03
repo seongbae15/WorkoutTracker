@@ -3,8 +3,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class MenuUIHandler : MonoBehaviour
 {
-    public void CheckVideo()
+    public void Move2SelectedVideoScene()
     {
+        MainManager.Instance.PickVideoFromGallery();
         SceneManager.LoadScene("SelectedVideoScene");
     }
 
