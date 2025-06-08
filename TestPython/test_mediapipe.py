@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
                 # 투명한 컬러 오버레이 생성
                 mask_colored = cv2.bitwise_and(alpha_mask, alpha_mask, mask=path_mask)
-                overlayed_frame = cv2.addWeighted(frame, 1.0, mask_colored, 0.3, 0)  # 0.3 투명도
+                overlayed_frame = cv2.addWeighted(frame, 1.0, mask_colored, 0.5, 0)  # 0.5 투명도
 
                 out.write(overlayed_frame)
             else:
