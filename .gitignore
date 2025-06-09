@@ -296,3 +296,13 @@ crashlytics-build.properties
 
 # Custom
 .vscode
+
+# AI ckpts
+*.pth
+*.task
+*.pt
+
+# Data
+*.MOV
+*.mov
+*.mp4
