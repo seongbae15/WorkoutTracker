@@ -14,9 +14,6 @@ public class YoloManager : MonoBehaviour
 
     public RawImage displayImage;
 
-    public TMP_Text fpsText;
-    public TMP_Text numOfPeopleText;
-
     private WebCamTexture webcamTexture;      
     private VideoPlayer videoPlayer;
 
@@ -25,7 +22,7 @@ public class YoloManager : MonoBehaviour
 
     void Start()
     {
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Screen.orientation = ScreenOrientation.Portrait;
 
         if (isLiveCamera)
         {
@@ -35,6 +32,7 @@ public class YoloManager : MonoBehaviour
         else
         {
             videoPlayer = GetComponent<VideoPlayer>();
+            videoPlayer.url = MainManager.Instance.videoPath;
             videoPlayer.Play();
         }
 
@@ -60,11 +58,8 @@ public class YoloManager : MonoBehaviour
         //calculate fps
         float deltaTime = Time.deltaTime;
         float fpsValue = 1.0f / deltaTime;
-        fpsText.text = $"{fpsValue:F2}fps";
 
         int result = 0;
         result = await yoloPoseModel.ExecuteModel(inputTexture);
-        if (result>0)
-            numOfPeopleText.text = $"{result} people";
     }
 }

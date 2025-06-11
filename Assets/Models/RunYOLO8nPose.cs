@@ -13,7 +13,6 @@ public class RunYOLO8nPose : MonoBehaviour
     private Sprite keypointSprite;
     public Texture2D keypointTexture;
     public Texture2D borderTexture;
-    public Font font;
 
     private Transform displayLocation;
     private Worker engine;
@@ -22,7 +21,7 @@ public class RunYOLO8nPose : MonoBehaviour
     private const int imageWidth = 640;
     private const int imageHeight = 640;
     private const int numJoints = 17;
-    private const int maxPeople = 50;
+    private const int maxPeople = 1;
     private const int maxLines = 20;
 
     List<GameObject> boxPool = new();
@@ -42,7 +41,7 @@ public class RunYOLO8nPose : MonoBehaviour
     public void Initialize(BackendType backend, RawImage rawImage)
     {
         displayImage = rawImage;
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Screen.orientation = ScreenOrientation.Portrait;
         LoadModel(backend);
         targetRT = new RenderTexture(imageWidth, imageHeight, 0);
         displayLocation = displayImage.transform;
