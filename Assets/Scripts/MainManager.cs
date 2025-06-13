@@ -23,10 +23,8 @@ public class MainManager : MonoBehaviour
     {
         NativeGallery.GetVideoFromGallery((path) =>
         {
-            Debug.Log("Video path: " + path);
             if (path != null)
             {
-                Debug.Log("Video selected: " + path);
                 videoPath = path;
             }
         }, "Select a video");
