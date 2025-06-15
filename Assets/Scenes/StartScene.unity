@@ -420,7 +420,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1608613140}
         m_TargetAssemblyTypeName: MenuUIHandler, Assembly-CSharp
-        m_MethodName: Move2SelectedVideoScene
+        m_MethodName: SelectVideo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -994,6 +994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 904e4e2fc90254dc99f8a900c8e90630, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  savePopupModal: {fileID: 0}
 --- !u!4 &1608613141
 Transform:
   m_ObjectHideFlags: 0
@@ -1021,7 +1022,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d600a74c83c846918c679a343633596, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkSpeed: 1
   tmpText: {fileID: 1021649455}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
