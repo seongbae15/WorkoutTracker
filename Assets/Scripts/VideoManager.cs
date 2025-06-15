@@ -10,7 +10,6 @@ public class VideoManager : MonoBehaviour
     void Start()
     {
         string videoPath = MainManager.Instance.videoPath;
-        Debug.Log("SelectedScene: " + videoPath);
         if (!string.IsNullOrEmpty(videoPath))
         {
             StartCoroutine(PlayVideo(videoPath));

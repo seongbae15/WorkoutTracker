@@ -301,6 +301,7 @@ crashlytics-build.properties
 *.pth
 *.task
 *.pt
+*.onnx
 
 # Data
 *.MOV
