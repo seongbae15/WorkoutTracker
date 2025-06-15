@@ -42,18 +42,18 @@ public class MenuUIHandler : MonoBehaviour
         }
     }
 
-    // public void MoveToStartScene(bool isSave)
-    // {
-    //     if (isSave)
-    //     {
-    //         Debug.Log("Save the video");
-    //     }
-    //     else
-    //     {
-    //         Debug.Log("Do not save the video");
-    //     }
-    //     SceneManager.LoadScene("StartScene");
-    // }
+    public void MoveToStartScene(bool isSave)
+    {
+        if (isSave)
+        {
+            Debug.Log("Save the video");
+        }
+        else
+        {
+            Debug.Log("Do not save the video");
+        }
+        SceneManager.LoadScene("StartScene");
+    }
 
     public void SelectVideo()
     {
