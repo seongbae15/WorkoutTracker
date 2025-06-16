@@ -4,11 +4,16 @@ using UnityEngine.SceneManagement;
 public class MenuUIHandler : MonoBehaviour
 {
     public GameObject savePopupModal;
+    public GameObject warnPopupModal;
     void Start()
     {
         if (savePopupModal != null)
         {
             savePopupModal.SetActive(false);
+        }
+        if (warnPopupModal != null)
+        {
+            warnPopupModal.SetActive(false);
         }
     }
     public void Move2SelectedVideoScene()
@@ -42,7 +47,7 @@ public class MenuUIHandler : MonoBehaviour
         }
     }
 
-    public void MoveToStartScene(bool isSave)
+    public void MoveToStartScene(bool isSave=false)
     {
         if (isSave)
         {
