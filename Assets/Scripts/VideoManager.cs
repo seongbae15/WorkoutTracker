@@ -1,17 +1,23 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Video;
+using UnityEngine.SceneManagement;
 
 public class VideoManager : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         string videoPath = MainManager.Instance.videoPath;
         if (!string.IsNullOrEmpty(videoPath))
         {
+            if (!CheckVideoFileFormat(videoPath))
+            {
+                // Create a popup window.
+                SceneManager.LoadScene("StartScene");
+                return;
+            }
             StartCoroutine(PlayVideo(videoPath));
         }
     }
@@ -25,5 +31,16 @@ public class VideoManager : MonoBehaviour
             yield return null;
         }
         videoPlayer.Play();
+    }
+
+    private bool CheckVideoFileFormat(string videoPath)
+    {
+        string extension = System.IO.Path.GetExtension(videoPath);
+        if (extension != ".mp4" && extension != ".mov" && extension != ".MP4" && extension != ".MOV")
+        {
+            Debug.Log("Unsupported video format: " + extension);
+            return false;
+        }
+        return true;
     }
 }
