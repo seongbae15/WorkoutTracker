@@ -10,6 +10,7 @@ public class VideoManager : MonoBehaviour
     double limitDuration = 15.0; // 15 seconds
     void Start()
     {
+        ClearRenderTexture();
         string videoPath = MainManager.Instance.videoPath;
         if (!string.IsNullOrEmpty(videoPath))
         {
@@ -45,23 +46,38 @@ public class VideoManager : MonoBehaviour
         string extension = System.IO.Path.GetExtension(videoPath).ToLower();
         if (extension != ".mp4" && extension != ".mov")
         {
-            warnPopupModal.Show("Unsupported video format. Please select an MP4 or MOV file.", () => {
+            warnPopupModal.Show("Unsupported video format. Please select an MP4 or MOV file.", () =>
+            {
                 SceneManager.LoadScene("StartScene");
             });
             return false;
         }
         return true;
     }
-    
+
     private bool CheckVideoDuration(VideoPlayer videoPlayer)
     {
         if (videoPlayer.length > limitDuration)
         {
-            warnPopupModal.Show("Video duration exceeds the limit of 15 seconds.", () => {
+            warnPopupModal.Show("Video duration exceeds the limit of 15 seconds.", () =>
+            {
                 SceneManager.LoadScene("StartScene");
             });
             return false;
         }
         return true;
+    }
+
+    private void ClearRenderTexture()
+    {
+        if (videoPlayer.targetTexture != null)
+        {
+            RenderTexture rt = videoPlayer.targetTexture;
+            RenderTexture.active = rt;
+            GL.Clear(true, true, Color.black); // 또는 Color.clear로 투명하게
+            RenderTexture.active = null;
+            // videoPlayer.targetTexture.Release();
+            // videoPlayer.targetTexture = null;
+        }
     }
 }
