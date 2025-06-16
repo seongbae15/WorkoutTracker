@@ -5,7 +5,7 @@ public class MainManager : MonoBehaviour
 {
     public static MainManager Instance;
 
-    public string videoPath;
+    public string videoPath = null;
 
     private void Awake()
     {
@@ -19,7 +19,7 @@ public class MainManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void PickVideoFromGallery()
+    public bool PickVideoFromGallery()
     {
         NativeGallery.GetVideoFromGallery((path) =>
         {
@@ -27,6 +27,12 @@ public class MainManager : MonoBehaviour
             {
                 videoPath = path;
             }
+            else
+            {
+                videoPath = null;
+            }
         }, "Select a video");
+
+        return videoPath != null;
     }
 }
