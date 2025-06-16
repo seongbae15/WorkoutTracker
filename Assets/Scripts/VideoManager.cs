@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 public class VideoManager : MonoBehaviour
 {
     public VideoPlayer videoPlayer;
-
-    void Awake()
+    double limitDuration = 15.0; // 15 seconds
+    void Start()
     {
         string videoPath = MainManager.Instance.videoPath;
         if (!string.IsNullOrEmpty(videoPath))
@@ -25,12 +25,21 @@ public class VideoManager : MonoBehaviour
     {
         videoPlayer.url = videoPath;
         videoPlayer.Prepare();
-
         while (!videoPlayer.isPrepared)
         {
             yield return null;
         }
-        videoPlayer.Play();
+
+        if (CheckVideoDuration(videoPlayer))
+        {
+            videoPlayer.Play();
+        }
+        else
+        {
+            SceneManager.LoadScene("StartScene");
+            yield break;
+        }
+
     }
 
     private bool CheckVideoFileFormat(string videoPath)
@@ -38,7 +47,15 @@ public class VideoManager : MonoBehaviour
         string extension = System.IO.Path.GetExtension(videoPath);
         if (extension != ".mp4" && extension != ".mov" && extension != ".MP4" && extension != ".MOV")
         {
-            Debug.Log("Unsupported video format: " + extension);
+            return false;
+        }
+        return true;
+    }
+    
+    private bool CheckVideoDuration(VideoPlayer videoPlayer)
+    {
+        if (videoPlayer.length > limitDuration)
+        {
             return false;
         }
         return true;
