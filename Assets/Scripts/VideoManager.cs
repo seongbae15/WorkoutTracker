@@ -74,10 +74,8 @@ public class VideoManager : MonoBehaviour
         {
             RenderTexture rt = videoPlayer.targetTexture;
             RenderTexture.active = rt;
-            GL.Clear(true, true, Color.black); // 또는 Color.clear로 투명하게
+            GL.Clear(true, true, Color.black);
             RenderTexture.active = null;
-            // videoPlayer.targetTexture.Release();
-            // videoPlayer.targetTexture = null;
         }
     }
 }
