@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class VideoManager : MonoBehaviour
 {
+    public WarnPopupWIndow warnPopupModal;
     public VideoPlayer videoPlayer;
     double limitDuration = 15.0; // 15 seconds
     void Start()
@@ -14,8 +15,6 @@ public class VideoManager : MonoBehaviour
         {
             if (!CheckVideoFileFormat(videoPath))
             {
-                // Create a popup window.
-                SceneManager.LoadScene("StartScene");
                 return;
             }
             StartCoroutine(PlayVideo(videoPath));
@@ -36,7 +35,6 @@ public class VideoManager : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("StartScene");
             yield break;
         }
 
@@ -44,9 +42,12 @@ public class VideoManager : MonoBehaviour
 
     private bool CheckVideoFileFormat(string videoPath)
     {
-        string extension = System.IO.Path.GetExtension(videoPath);
-        if (extension != ".mp4" && extension != ".mov" && extension != ".MP4" && extension != ".MOV")
+        string extension = System.IO.Path.GetExtension(videoPath).ToLower();
+        if (extension != ".mp4" && extension != ".mov")
         {
+            warnPopupModal.Show("Unsupported video format. Please select an MP4 or MOV file.", () => {
+                SceneManager.LoadScene("StartScene");
+            });
             return false;
         }
         return true;
@@ -56,6 +57,9 @@ public class VideoManager : MonoBehaviour
     {
         if (videoPlayer.length > limitDuration)
         {
+            warnPopupModal.Show("Video duration exceeds the limit of 15 seconds.", () => {
+                SceneManager.LoadScene("StartScene");
+            });
             return false;
         }
         return true;
