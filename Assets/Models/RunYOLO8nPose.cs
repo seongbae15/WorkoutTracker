@@ -64,7 +64,7 @@ public class RunYOLO8nPose : MonoBehaviour
                 var kpObj = new GameObject($"point_{i}_{j}");
                 kpObj.transform.SetParent(displayLocation, false);
                 var rt = kpObj.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(24, 24);
+                rt.sizeDelta = new Vector2(20, 20);
                 var img = kpObj.AddComponent<Image>();
                 img.sprite = keypointSprite;
                 img.color = Color.red;
@@ -85,9 +85,9 @@ public class RunYOLO8nPose : MonoBehaviour
                 var lr = lineObj.AddComponent<LineRenderer>();
                 lr.positionCount = 2;
                 lr.material = new Material(Shader.Find("Sprites/Default"));
-                lr.widthMultiplier = 5f;
+                lr.widthMultiplier = 3f;
                 lr.sortingOrder = 5;
-                lr.startColor = lr.endColor = Color.cyan;
+                lr.startColor = lr.endColor = Color.green;
                 lr.useWorldSpace = false;
                 lineObj.SetActive(false);
                 lines.Add(lineObj);
