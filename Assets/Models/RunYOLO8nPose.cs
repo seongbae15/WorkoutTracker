@@ -64,10 +64,10 @@ public class RunYOLO8nPose : MonoBehaviour
                 var kpObj = new GameObject($"point_{i}_{j}");
                 kpObj.transform.SetParent(displayLocation, false);
                 var rt = kpObj.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(10, 10);
+                rt.sizeDelta = new Vector2(24, 24);
                 var img = kpObj.AddComponent<Image>();
                 img.sprite = keypointSprite;
-                img.color = Color.green;
+                img.color = Color.red;
                 kpObj.SetActive(false);
                 kpList.Add(kpObj);
             }
