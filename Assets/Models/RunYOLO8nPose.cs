@@ -131,7 +131,7 @@ public class RunYOLO8nPose : MonoBehaviour
         {
             int numOfPeople = 0;
             float aspect = inputTexture.width * 1f / inputTexture.height;
-            Graphics.Blit(inputTexture, targetRT, new Vector2(1f / aspect, 1), Vector2.zero);
+            Graphics.Blit(inputTexture, targetRT);
             displayImage.texture = targetRT;
 
             using var input = TextureConverter.ToTensor(targetRT, imageWidth, imageHeight, 3);
