@@ -181,7 +181,7 @@ public class RunYOLO8nPose : MonoBehaviour
     public void DrawPoseBox(BoundingPoseBox poseBox, int id)
     {
         var keypointObjects = keypointPool[id];
-        for (int i = 0; i < numJoints; i++)
+        for (int i = 5; i < numJoints; i++)
         {
             var kp = poseBox.keypoints[i];
             var kpObj = keypointObjects[i];
@@ -196,7 +196,7 @@ public class RunYOLO8nPose : MonoBehaviour
 
         int[,] connections = new int[,]
         {
-            {0,1},{0,2},{1,3},{2,4},{5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
+            {5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
             {8,10},{11,12},{11,13},{12,14},{13,15},{14,16}
         };
 
