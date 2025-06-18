@@ -180,11 +180,6 @@ public class RunYOLO8nPose : MonoBehaviour
 
     public void DrawPoseBox(BoundingPoseBox poseBox, int id)
     {
-        GameObject panel = id < boxPool.Count ? boxPool[id] : CreateNewBox(Color.red);
-        panel.SetActive(true);
-        panel.transform.localPosition = new Vector3(poseBox.centerX, -poseBox.centerY);
-        panel.GetComponent<RectTransform>().sizeDelta = new Vector2(poseBox.width, poseBox.height);
-
         var keypointObjects = keypointPool[id];
         for (int i = 0; i < numJoints; i++)
         {
