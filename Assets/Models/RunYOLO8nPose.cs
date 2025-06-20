@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Unity.Sentis;
 using System.Threading.Tasks;
 using TMPro;
+using System;
 
 public class RunYOLO8nPose : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class RunYOLO8nPose : MonoBehaviour
     private const int numJoints = 17;
     private const int maxPeople = 1;
     private const int maxLines = 20;
+
+    Vector2[] smoothedKeypoints = new Vector2[numJoints];
+    private float smoothingFactor = 0.8f; // Adjust this value to control smoothing
 
     List<GameObject> boxPool = new();
     List<List<GameObject>> keypointPool = new();
@@ -185,9 +189,14 @@ public class RunYOLO8nPose : MonoBehaviour
         {
             var kp = poseBox.keypoints[i];
             var kpObj = keypointObjects[i];
+
+            Vector2 targetPos = new Vector2(kp.x, -kp.y);
+            // Smooth the keypoint position
+            smoothedKeypoints[i] = Vector2.Lerp(smoothedKeypoints[i], targetPos, smoothingFactor);
+
             kpObj.SetActive(kp.confidence > jointThreshold);
             if (kpObj.activeSelf)
-                kpObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(kp.x, -kp.y);
+                kpObj.GetComponent<RectTransform>().anchoredPosition = smoothedKeypoints[i];
         }
 
         var lineHolder = lineHolderPool[id];
