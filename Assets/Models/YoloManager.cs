@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
 using Unity.Sentis;
-using UnityEngine.UIElements;
 using UnityEngine.UI;
 
 public class YoloManager : MonoBehaviour
@@ -14,12 +13,14 @@ public class YoloManager : MonoBehaviour
 
     public RawImage displayImage;
 
-    private WebCamTexture webcamTexture;      
+    private WebCamTexture webcamTexture;
     private VideoPlayer videoPlayer;
 
     public bool isLiveCamera = false;
     public bool isYoloPoseModel = false;
 
+    public Button playPauseButton;
+    private bool isPaused = false;
     void Start()
     {
         Screen.orientation = ScreenOrientation.Portrait;
@@ -33,11 +34,14 @@ public class YoloManager : MonoBehaviour
         {
             videoPlayer = GetComponent<VideoPlayer>();
             videoPlayer.url = MainManager.Instance.videoPath;
-            videoPlayer.Play();
+
+            videoPlayer.Prepare();
+            videoPlayer.prepareCompleted += Prepared;
+
+            playPauseButton.onClick.AddListener(TogglePlayPause);
         }
 
         yoloPoseModel.Initialize(backendType, displayImage);
-        
     }
     async void Update()
     {
@@ -62,4 +66,25 @@ public class YoloManager : MonoBehaviour
         int result = 0;
         result = await yoloPoseModel.ExecuteModel(inputTexture);
     }
+
+    void Prepared(VideoPlayer vp)
+    {
+        videoPlayer.Play();
+    }
+
+    public void TogglePlayPause()
+    {
+        if (videoPlayer == null) return;
+
+        if (videoPlayer.isPlaying)
+        {
+            videoPlayer.Pause();
+            isPaused = true;
+        }
+        else
+        {
+            videoPlayer.Play();
+            isPaused = false;
+        }
+    }    
 }
