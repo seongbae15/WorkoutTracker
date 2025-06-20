@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Unity.Sentis;
 using System.Threading.Tasks;
 using TMPro;
+using System;
 
 public class RunYOLO8nPose : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class RunYOLO8nPose : MonoBehaviour
     private const int numJoints = 17;
     private const int maxPeople = 1;
     private const int maxLines = 20;
+
+    Vector2[] smoothedKeypoints = new Vector2[numJoints];
+    private float smoothingFactor = 0.8f; // Adjust this value to control smoothing
 
     List<GameObject> boxPool = new();
     List<List<GameObject>> keypointPool = new();
@@ -64,10 +68,10 @@ public class RunYOLO8nPose : MonoBehaviour
                 var kpObj = new GameObject($"point_{i}_{j}");
                 kpObj.transform.SetParent(displayLocation, false);
                 var rt = kpObj.AddComponent<RectTransform>();
-                rt.sizeDelta = new Vector2(10, 10);
+                rt.sizeDelta = new Vector2(20, 20);
                 var img = kpObj.AddComponent<Image>();
                 img.sprite = keypointSprite;
-                img.color = Color.green;
+                img.color = Color.red;
                 kpObj.SetActive(false);
                 kpList.Add(kpObj);
             }
@@ -85,9 +89,9 @@ public class RunYOLO8nPose : MonoBehaviour
                 var lr = lineObj.AddComponent<LineRenderer>();
                 lr.positionCount = 2;
                 lr.material = new Material(Shader.Find("Sprites/Default"));
-                lr.widthMultiplier = 5f;
+                lr.widthMultiplier = 3f;
                 lr.sortingOrder = 5;
-                lr.startColor = lr.endColor = Color.cyan;
+                lr.startColor = lr.endColor = Color.green;
                 lr.useWorldSpace = false;
                 lineObj.SetActive(false);
                 lines.Add(lineObj);
@@ -131,7 +135,7 @@ public class RunYOLO8nPose : MonoBehaviour
         {
             int numOfPeople = 0;
             float aspect = inputTexture.width * 1f / inputTexture.height;
-            Graphics.Blit(inputTexture, targetRT, new Vector2(1f / aspect, 1), Vector2.zero);
+            Graphics.Blit(inputTexture, targetRT);
             displayImage.texture = targetRT;
 
             using var input = TextureConverter.ToTensor(targetRT, imageWidth, imageHeight, 3);
@@ -180,19 +184,19 @@ public class RunYOLO8nPose : MonoBehaviour
 
     public void DrawPoseBox(BoundingPoseBox poseBox, int id)
     {
-        GameObject panel = id < boxPool.Count ? boxPool[id] : CreateNewBox(Color.red);
-        panel.SetActive(true);
-        panel.transform.localPosition = new Vector3(poseBox.centerX, -poseBox.centerY);
-        panel.GetComponent<RectTransform>().sizeDelta = new Vector2(poseBox.width, poseBox.height);
-
         var keypointObjects = keypointPool[id];
-        for (int i = 0; i < numJoints; i++)
+        for (int i = 5; i < numJoints; i++)
         {
             var kp = poseBox.keypoints[i];
             var kpObj = keypointObjects[i];
+
+            Vector2 targetPos = new Vector2(kp.x, -kp.y);
+            // Smooth the keypoint position
+            smoothedKeypoints[i] = Vector2.Lerp(smoothedKeypoints[i], targetPos, smoothingFactor);
+
             kpObj.SetActive(kp.confidence > jointThreshold);
             if (kpObj.activeSelf)
-                kpObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(kp.x, -kp.y);
+                kpObj.GetComponent<RectTransform>().anchoredPosition = smoothedKeypoints[i];
         }
 
         var lineHolder = lineHolderPool[id];
@@ -201,7 +205,7 @@ public class RunYOLO8nPose : MonoBehaviour
 
         int[,] connections = new int[,]
         {
-            {0,1},{0,2},{1,3},{2,4},{5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
+            {5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
             {8,10},{11,12},{11,13},{12,14},{13,15},{14,16}
         };
 
