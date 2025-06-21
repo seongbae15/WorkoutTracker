@@ -35,35 +35,25 @@ public class VideoManager : MonoBehaviour
 
     private IEnumerator PlayVideo(string videoPath)
     {
-        Debug.Log("PlayVideo");
         videoPlayer.source = VideoSource.Url;
         videoPlayer.url = videoPath;
         videoPlayer.Prepare();
-        Debug.Log("PlayVideo");
 
         while (!videoPlayer.isPrepared)
         {
-            Debug.Log("isPrepared");
-
             yield return null;
         }
-        Debug.Log(videoPlayer.targetTexture);
         if (videoPlayer.targetTexture != null && videoDisplay != null)
         {
-            Debug.Log("null");
             videoDisplay.texture = videoPlayer.targetTexture;
         }
 
         if (CheckVideoDuration(videoPlayer))
         {
-            Debug.Log("duration ok");
-
             videoPlayer.Play();
         }
         else
         {
-            Debug.Log("duration er");
-
             yield break;
         }
 

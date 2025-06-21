@@ -311,13 +311,6 @@ private void DrawPoseOnTexture(Texture2D texture, BoundingPoseBox poseBox)
         }
     }
 
-    Debug.Log("-----------------------------");
-    for (int i = 0; i < numJoints; i++)
-    {
-        Debug.Log(pixelPoints[i]);
-    }
-    Debug.Log("-----------------------------");
-
     int[,] connections = new int[,]
     {
         {5,6},{5,7},{5,11},{6,8},{6,12},{7,9},

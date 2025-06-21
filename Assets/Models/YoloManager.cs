@@ -77,16 +77,13 @@ public class YoloManager : MonoBehaviour
             // 다음 프레임으로 이동
             videoPlayer.StepForward();
             
-            Debug.Log(videoPlayer.frameCount + " / " + videoPlayer.frame + " / " + totalFrame);
             // 마지막 프레임 도달 시
             if (videoPlayer.frame >= totalFrame - 1)
             {
-                Debug.Log(1);
                 videoPlayer.Pause();
                 isProcessingAllFrames = false;
                 isReplayMode = true;
                 replayFrameIndex = 0;
-                Debug.Log("isReplayMode: " + isReplayMode);
             }
         }
         else if (isReplayMode)
