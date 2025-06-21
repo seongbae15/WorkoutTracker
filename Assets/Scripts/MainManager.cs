@@ -19,20 +19,12 @@ public class MainManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public bool PickVideoFromGallery()
+    public void PickVideoFromGallery(System.Action<string> onVideoPicked)
     {
         NativeGallery.GetVideoFromGallery((path) =>
         {
-            if (path != null)
-            {
-                videoPath = path;
-            }
-            else
-            {
-                videoPath = null;
-            }
+            videoPath = path;
+            onVideoPicked?.Invoke(path);
         }, "Select a video");
-
-        return videoPath != null;
     }
 }
