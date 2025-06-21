@@ -1285,7 +1285,7 @@ VideoPlayer:
   m_ControlledAudioTrackCount: 1
   m_PlayOnAwake: 0
   m_SkipOnDrop: 1
-  m_Looping: 1
+  m_Looping: 0
   m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
@@ -1304,8 +1304,6 @@ MonoBehaviour:
   yoloPoseModel: {fileID: 924086585}
   backendType: 512
   displayImage: {fileID: 1738149575}
-  isLiveCamera: 0
-  isYoloPoseModel: 1
   playPauseButton: {fileID: 2031687887}
 --- !u!4 &1514618451
 Transform:

@@ -45,7 +45,7 @@ public class RunYOLO8nPose : MonoBehaviour
     public void Initialize(BackendType backend, RawImage rawImage)
     {
         displayImage = rawImage;
-        Screen.orientation = ScreenOrientation.Portrait;
+        // Screen.orientation = ScreenOrientation.Portrait;
         LoadModel(backend);
         targetRT = new RenderTexture(imageWidth, imageHeight, 0);
         displayLocation = displayImage.transform;
@@ -156,6 +156,7 @@ public class RunYOLO8nPose : MonoBehaviour
 
             for (int n = 0; n < numOfPeople; n++)
             {
+                // 좌표 계산은 그대로
                 var poseBox = new BoundingPoseBox
                 {
                     centerX = outputTensor[n, 0] * scaleX - displayWidth / 2,
@@ -169,14 +170,16 @@ public class RunYOLO8nPose : MonoBehaviour
                 {
                     poseBox.keypoints[kpIdx] = new Keypoint
                     {
-                        x = keyPointsTensor[n, kpIdx * 3] * scaleX - displayWidth / 2,
-                        y = keyPointsTensor[n, kpIdx * 3 + 1] * scaleY - displayHeight / 2,
+                        x = keyPointsTensor[n, kpIdx * 3],
+                        y = keyPointsTensor[n, kpIdx * 3 + 1],
                         confidence = keyPointsTensor[n, kpIdx * 3 + 2]
                     };
                 }
 
-                DrawPoseBox(poseBox, n);
+                // ✅ targetRT에 직접 그리기
+                DrawPoseBoxToRT(poseBox);
             }
+
             return numOfPeople;
         }
         finally { isProcessing = false; }
@@ -259,4 +262,74 @@ public class RunYOLO8nPose : MonoBehaviour
             Destroy(targetRT);
         }
     }
+
+    public async Task<Texture2D> ExecuteModelAndRenderToTexture(Texture inputTexture)
+    {
+        int result = await ExecuteModel(inputTexture);
+        // 현재 displayImage.texture에 렌더링된 결과를 Texture2D로 복사
+        Texture2D renderedTexture = new Texture2D(targetRT.width, targetRT.height, TextureFormat.RGB24, false);
+        RenderTexture.active = targetRT;
+        renderedTexture.ReadPixels(new Rect(0, 0, targetRT.width, targetRT.height), 0, 0);
+        renderedTexture.Apply();
+        RenderTexture.active = null;
+
+        return renderedTexture;
+    }
+
+    public void DrawPoseBoxToRT(BoundingPoseBox poseBox)
+{
+    RenderTexture.active = targetRT;
+    GL.PushMatrix();
+    GL.LoadPixelMatrix(0, imageWidth, imageHeight, 0); // 좌표계 설정 (Top-Left 기준)
+
+    Material lineMat = new Material(Shader.Find("Hidden/Internal-Colored"));
+    lineMat.SetPass(0);
+
+    GL.Begin(GL.LINES);
+    GL.Color(Color.green);
+
+    int[,] connections = new int[,]
+    {
+        {5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
+        {8,10},{11,12},{11,13},{12,14},{13,15},{14,16}
+    };
+
+    for (int i = 0; i < connections.GetLength(0); i++)
+    {
+        int startIdx = connections[i, 0];
+        int endIdx = connections[i, 1];
+        var kp1 = poseBox.keypoints[startIdx];
+        var kp2 = poseBox.keypoints[endIdx];
+
+        if (kp1.confidence > jointThreshold && kp2.confidence > jointThreshold)
+        {
+            GL.Vertex3(kp1.x, kp1.y, 0);
+            GL.Vertex3(kp2.x, kp2.y, 0);
+        }
+    }
+
+    GL.End();
+    GL.Begin(GL.QUADS);
+    GL.Color(Color.red);
+    float size = 4f;
+
+    for (int i = 5; i < poseBox.keypoints.Length; i++)
+    {
+        if (poseBox.keypoints[i].confidence < jointThreshold) continue;
+        float x = poseBox.keypoints[i].x;
+        float y = poseBox.keypoints[i].y;
+
+        GL.Vertex3(x - size, y - size, 0);
+        GL.Vertex3(x + size, y - size, 0);
+        GL.Vertex3(x + size, y + size, 0);
+        GL.Vertex3(x - size, y + size, 0);
+
+    }
+
+    GL.End();
+    GL.PopMatrix();
+    RenderTexture.active = null;
+}
+
+
 }
