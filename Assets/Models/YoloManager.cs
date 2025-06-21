@@ -13,7 +13,6 @@ public class YoloManager : MonoBehaviour
 
     public RawImage displayImage;
 
-    private WebCamTexture webcamTexture;
     private VideoPlayer videoPlayer;
 
     public bool isLiveCamera = false;
@@ -25,21 +24,13 @@ public class YoloManager : MonoBehaviour
     {
         Screen.orientation = ScreenOrientation.Portrait;
 
-        if (isLiveCamera)
-        {
-            webcamTexture = new WebCamTexture();
-            webcamTexture.Play();
-        }
-        else
-        {
-            videoPlayer = GetComponent<VideoPlayer>();
-            videoPlayer.url = MainManager.Instance.videoPath;
+        videoPlayer = GetComponent<VideoPlayer>();
+        videoPlayer.url = MainManager.Instance.videoPath;
 
-            videoPlayer.Prepare();
-            videoPlayer.prepareCompleted += Prepared;
+        videoPlayer.Prepare();
+        videoPlayer.prepareCompleted += Prepared;
 
-            playPauseButton.onClick.AddListener(TogglePlayPause);
-        }
+        playPauseButton.onClick.AddListener(TogglePlayPause);
 
         yoloPoseModel.Initialize(backendType, displayImage);
     }
@@ -47,17 +38,10 @@ public class YoloManager : MonoBehaviour
     {
         Texture inputTexture;
 
-        if (isLiveCamera)
-        {
-            inputTexture = webcamTexture;
-        }
-        else
-        {
-            if (videoPlayer.texture == null)
-                return;
+        if (videoPlayer.texture == null)
+            return;
 
-            inputTexture = videoPlayer.texture;
-        }
+        inputTexture = videoPlayer.texture;
 
         //calculate fps
         float deltaTime = Time.deltaTime;

@@ -721,7 +721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a629678050a86489aa17ee84b359e4e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asset: {fileID: 5022602860645237092, guid: 40e2e9475b5d84f9d9e783546ed87c86, type: 3}
+  asset: {fileID: 5022602860645237092, guid: f1357c1c2eb3549c7a449db08988116f, type: 3}
   keypointTexture: {fileID: 2800000, guid: 7a820a11fc3e0457dabc2b415f14d452, type: 3}
   borderTexture: {fileID: 2800000, guid: a5b1bb94f2dde4cdeab5a6ab83a2534d, type: 3}
   iouThreshold: 0.5
