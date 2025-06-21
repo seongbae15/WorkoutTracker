@@ -26,7 +26,7 @@ public class RunYOLO8nPose : MonoBehaviour
     private const int maxLines = 20;
 
     Vector2[] smoothedKeypoints = new Vector2[numJoints];
-    private float smoothingFactor = 0.8f; // Adjust this value to control smoothing
+    private float smoothingFactor = 1.0f; // Adjust this value to control smoothing
 
     List<GameObject> boxPool = new();
     List<List<GameObject>> keypointPool = new();
