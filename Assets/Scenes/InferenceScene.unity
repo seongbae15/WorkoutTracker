@@ -1571,7 +1571,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 447919643}
         m_TargetAssemblyTypeName: MenuUIHandler, Assembly-CSharp
-        m_MethodName: ClickDoneButton
+        m_MethodName: Move2StartScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
