@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
 using Unity.Sentis;
@@ -15,47 +13,49 @@ public class YoloManager : MonoBehaviour
 
     private VideoPlayer videoPlayer;
 
-    public bool isLiveCamera = false;
-    public bool isYoloPoseModel = false;
-
     public Button playPauseButton;
     private bool isPaused = false;
+
     void Start()
     {
         Screen.orientation = ScreenOrientation.Portrait;
 
+        yoloPoseModel.Initialize(backendType, displayImage);
+
         videoPlayer = GetComponent<VideoPlayer>();
         videoPlayer.url = MainManager.Instance.videoPath;
 
+        videoPlayer.errorReceived += OnVideoError;
+        videoPlayer.prepareCompleted += OnVideoPrepared;
         videoPlayer.Prepare();
-        videoPlayer.prepareCompleted += Prepared;
+
+        // videoPlayer.prepareCompleted += Prepared;
 
         playPauseButton.onClick.AddListener(TogglePlayPause);
 
-        yoloPoseModel.Initialize(backendType, displayImage);
     }
     async void Update()
     {
-        Texture inputTexture;
-
-        if (videoPlayer.texture == null)
+        if (videoPlayer == null || !videoPlayer.isPrepared || videoPlayer.texture == null)
             return;
 
-        inputTexture = videoPlayer.texture;
-
-        //calculate fps
-        float deltaTime = Time.deltaTime;
-        float fpsValue = 1.0f / deltaTime;
-
-        int result = 0;
-        result = await yoloPoseModel.ExecuteModel(inputTexture);
+        Texture inputTexture = videoPlayer.texture;
+        await yoloPoseModel.ExecuteModel(inputTexture);
     }
 
-    void Prepared(VideoPlayer vp)
+    void OnVideoPrepared(VideoPlayer vp)
     {
         videoPlayer.Play();
     }
 
+    void OnVideoError(VideoPlayer vp, string message)
+{
+        Debug.LogError($"[YoloManager] VideoPlayer Error: {message} (url: {vp.url})");
+#if UNITY_WEBGL
+        // WebGL에서 오류 발생 시 알림 (예: 브라우저 지원 문제, blob URL 해석 실패 등)
+        Application.ExternalEval($"alert('Video playback error: {message}')");
+#endif
+    }
     public void TogglePlayPause()
     {
         if (videoPlayer == null) return;

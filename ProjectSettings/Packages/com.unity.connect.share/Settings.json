@@ -19,7 +19,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "buildOutputDirList",
-                "value": "{\"m_Value\":\"/Users/seongbae/workspace/WorkoutTracker/WebGL Builds/TestBuild;;;;;;;;;\"}"
+                "value": "{\"m_Value\":\"/Users/seongbae/workspace/WorkoutTracker/Builds/WebGLBuild;/Users/seongbae/workspace/WorkoutTracker/WebGL Builds/WebGLBuild/WebGLBuild;/Users/seongbae/workspace/WorkoutTracker/WebGL Builds/WebGLBuild;/Users/seongbae/workspace/WorkoutTracker/WebGL Builds/TestBuild2;/Users/seongbae/workspace/WorkoutTracker/WebGL Builds/TestBuild;;;;;\"}"
             }
         ]
     }

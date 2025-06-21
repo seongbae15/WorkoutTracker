@@ -62,15 +62,7 @@ public class MenuUIHandler : MonoBehaviour
 
     public void SelectVideo()
     {
-        bool isVideoPicked = MainManager.Instance.PickVideoFromGallery();
-        if (isVideoPicked)
-        {
-            SceneManager.LoadScene("SelectedVideoScene");
-        }
-        else
-        {
-            SceneManager.LoadScene("StartScene");
-        }
+        SceneManager.LoadScene("SelectedVideoScene");
     }
 
 }
