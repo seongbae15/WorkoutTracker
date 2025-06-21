@@ -42,6 +42,8 @@ public class RunYOLO8nPose : MonoBehaviour
     public struct Keypoint { public float x, y, confidence; }
     public struct BoundingPoseBox { public float centerX, centerY, width, height; public Keypoint[] keypoints; }
 
+    public List<Texture2D> poseFrames = new List<Texture2D>();
+
     public void Initialize(BackendType backend, RawImage rawImage)
     {
         displayImage = rawImage;
@@ -169,13 +171,25 @@ public class RunYOLO8nPose : MonoBehaviour
                 {
                     poseBox.keypoints[kpIdx] = new Keypoint
                     {
-                        x = keyPointsTensor[n, kpIdx * 3] * scaleX - displayWidth / 2,
-                        y = keyPointsTensor[n, kpIdx * 3 + 1] * scaleY - displayHeight / 2,
+                        x = keyPointsTensor[n, kpIdx * 3],
+                        y = keyPointsTensor[n, kpIdx * 3 + 1],
                         confidence = keyPointsTensor[n, kpIdx * 3 + 2]
                     };
                 }
 
-                DrawPoseBox(poseBox, n);
+                // DrawPoseBox(poseBox, n);
+                // 1. 입력 프레임 복사
+                RenderTexture.active = targetRT;
+                Texture2D frame = new Texture2D(targetRT.width, targetRT.height, TextureFormat.RGB24, false);
+                frame.ReadPixels(new Rect(0, 0, targetRT.width, targetRT.height), 0, 0);
+                frame.Apply();
+                RenderTexture.active = null;
+
+                // 2. 포즈 그리기 (Texture2D에 직접)
+                DrawPoseOnTexture(frame, poseBox);
+
+                // 3. 저장
+                poseFrames.Add(frame);
             }
             return numOfPeople;
         }
@@ -259,4 +273,113 @@ public class RunYOLO8nPose : MonoBehaviour
             Destroy(targetRT);
         }
     }
+
+private void DrawPoseOnTexture(Texture2D texture, BoundingPoseBox poseBox)
+{
+    Color keypointColor = Color.red;
+    Color lineColor = Color.green;
+    int radius = 4;
+
+    float texWidth = texture.width;
+    float texHeight = texture.height;
+
+    float displayWidth = imageWidth;
+    float displayHeight = imageHeight;
+
+    float offsetX = displayWidth / 2;
+    float offsetY = displayHeight / 2;
+
+    float scaleX = texWidth / displayWidth;
+    float scaleY = texHeight / displayHeight;
+
+    Vector2[] pixelPoints = new Vector2[numJoints];
+
+    for (int i = 5; i < poseBox.keypoints.Length; i++)
+    {
+        var kp = poseBox.keypoints[i];
+        if (kp.confidence >= jointThreshold)
+        {
+            float pixelX = kp.x * scaleX;
+            float pixelY = (imageHeight - kp.y) * scaleY;
+
+            pixelPoints[i] = new Vector2(pixelX, pixelY);
+            DrawCircle(texture, (int)pixelX, (int)pixelY, radius, keypointColor);
+        }
+        else
+        {
+            pixelPoints[i] = Vector2.negativeInfinity;
+        }
+    }
+
+    Debug.Log("-----------------------------");
+    for (int i = 0; i < numJoints; i++)
+    {
+        Debug.Log(pixelPoints[i]);
+    }
+    Debug.Log("-----------------------------");
+
+    int[,] connections = new int[,]
+    {
+        {5,6},{5,7},{5,11},{6,8},{6,12},{7,9},
+        {8,10},{11,12},{11,13},{12,14},{13,15},{14,16}
+    };
+
+    for (int i = 0; i < connections.GetLength(0); i++)
+    {
+        int idx1 = connections[i, 0];
+        int idx2 = connections[i, 1];
+        if (pixelPoints[idx1] != Vector2.negativeInfinity && pixelPoints[idx2] != Vector2.negativeInfinity)
+        {
+            DrawLine(texture,
+                (int)pixelPoints[idx1].x, (int)pixelPoints[idx1].y,
+                (int)pixelPoints[idx2].x, (int)pixelPoints[idx2].y,
+                lineColor);
+        }
+    }
+
+    texture.Apply();
+}
+
+
+    private void DrawCircle(Texture2D tex, int cx, int cy, int r, Color col)
+    {
+        int x, y, px, nx, py, ny, d;
+
+        for (x = 0; x <= r; x++)
+        {
+            d = (int)Mathf.Round(Mathf.Sqrt(r * r - x * x));
+            for (y = 0; y <= d; y++)
+            {
+                px = cx + x;
+                nx = cx - x;
+                py = cy + y;
+                ny = cy - y;
+
+                if (px >= 0 && px < tex.width && py >= 0 && py < tex.height) tex.SetPixel(px, py, col);
+                if (nx >= 0 && nx < tex.width && py >= 0 && py < tex.height) tex.SetPixel(nx, py, col);
+                if (px >= 0 && px < tex.width && ny >= 0 && ny < tex.height) tex.SetPixel(px, ny, col);
+                if (nx >= 0 && nx < tex.width && ny >= 0 && ny < tex.height) tex.SetPixel(nx, ny, col);
+            }
+        }
+    }
+
+    private void DrawLine(Texture2D tex, int x0, int y0, int x1, int y1, Color col)
+    {
+        int dx = Mathf.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+        int dy = -Mathf.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+        int err = dx + dy, e2;
+
+        while (true)
+        {
+            if (x0 >= 0 && x0 < tex.width && y0 >= 0 && y0 < tex.height)
+                tex.SetPixel(x0, y0, col);
+
+            if (x0 == x1 && y0 == y1) break;
+            e2 = 2 * err;
+            if (e2 >= dy) { err += dy; x0 += sx; }
+            if (e2 <= dx) { err += dx; y0 += sy; }
+        }
+    }
+
+
 }

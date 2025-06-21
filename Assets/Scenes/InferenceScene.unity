@@ -727,6 +727,7 @@ MonoBehaviour:
   iouThreshold: 0.5
   scoreThreshold: 0.5
   jointThreshold: 0.5
+  poseFrames: []
 --- !u!4 &924086586
 Transform:
   m_ObjectHideFlags: 0
@@ -1316,7 +1317,7 @@ VideoPlayer:
   m_ControlledAudioTrackCount: 1
   m_PlayOnAwake: 0
   m_SkipOnDrop: 1
-  m_Looping: 1
+  m_Looping: 0
   m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
