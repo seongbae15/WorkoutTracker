@@ -2,32 +2,49 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class VideoManager : MonoBehaviour
 {
     public WarnPopupWIndow warnPopupModal;
     public VideoPlayer videoPlayer;
     double limitDuration = 15.0; // 15 seconds
+    public RawImage videoDisplay;
+
+
     void Start()
     {
         ClearRenderTexture();
-        string videoPath = MainManager.Instance.videoPath;
-        if (!string.IsNullOrEmpty(videoPath))
+
+        MainManager.Instance.PickVideoFromGallery((path) =>
         {
-            if (!CheckVideoFileFormat(videoPath))
+            if (string.IsNullOrEmpty(path))
+            {
+                SceneManager.LoadScene("StartScene");
+                return;
+            }
+
+            if (!CheckVideoFileFormat(path))
             {
                 return;
             }
-            StartCoroutine(PlayVideo(videoPath));
-        }
+
+            StartCoroutine(PlayVideo(path));
+        });
     }
+
     private IEnumerator PlayVideo(string videoPath)
     {
+        videoPlayer.source = VideoSource.Url;
         videoPlayer.url = videoPath;
         videoPlayer.Prepare();
         while (!videoPlayer.isPrepared)
         {
             yield return null;
+        }
+        if (videoPlayer.targetTexture != null && videoDisplay != null)
+        {
+            videoDisplay.texture = videoPlayer.targetTexture;
         }
 
         if (CheckVideoDuration(videoPlayer))
@@ -70,12 +87,13 @@ public class VideoManager : MonoBehaviour
 
     private void ClearRenderTexture()
     {
-        if (videoPlayer.targetTexture != null)
-        {
-            RenderTexture rt = videoPlayer.targetTexture;
-            RenderTexture.active = rt;
-            GL.Clear(true, true, Color.black);
-            RenderTexture.active = null;
-        }
+        videoPlayer.Stop();
+        RenderTexture rt = videoPlayer.targetTexture;
+        RenderTexture.active = rt;
+        GL.Clear(true, true, Color.black);
+        RenderTexture.active = null;
+        videoPlayer.targetTexture.Release();
+        videoPlayer.clip = null;
+        videoPlayer.url = null;
     }
 }

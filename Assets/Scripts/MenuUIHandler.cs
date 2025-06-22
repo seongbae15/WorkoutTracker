@@ -18,15 +18,17 @@ public class MenuUIHandler : MonoBehaviour
     }
     public void Move2SelectedVideoScene()
     {
-        bool isVideoPicked = MainManager.Instance.PickVideoFromGallery();
-        if (isVideoPicked)
+        MainManager.Instance.PickVideoFromGallery((path) =>
         {
-            SceneManager.LoadScene("SelectedVideoScene");
-        }
-        else
-        {
-            Move2StartScene();
-        }
+            if (!string.IsNullOrEmpty(path))
+            {
+                SceneManager.LoadScene("SelectedVideoScene");
+            }
+            else
+            {
+                Move2StartScene();
+            }
+        });
     }
 
     public void Move2StartScene()
@@ -62,15 +64,7 @@ public class MenuUIHandler : MonoBehaviour
 
     public void SelectVideo()
     {
-        bool isVideoPicked = MainManager.Instance.PickVideoFromGallery();
-        if (isVideoPicked)
-        {
-            SceneManager.LoadScene("SelectedVideoScene");
-        }
-        else
-        {
-            SceneManager.LoadScene("StartScene");
-        }
+        SceneManager.LoadScene("SelectedVideoScene");
     }
 
 }
